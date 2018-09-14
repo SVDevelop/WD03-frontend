@@ -12,10 +12,12 @@ module.exports = function(options) {
 					message: err.message
 				}
 			})
+
 		}))
 		.pipe($.pug())
 		.pipe($.htmlBeautify(options.htmlbeautifyOptions))
 		.pipe(gulp.dest(options.dest))
-		.pipe(browserSync.stream());
+		// .pipe(browserSync.reload({ stream: true }));
+		.pipe(browserSync.stream());//stream()
 	};
 };

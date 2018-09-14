@@ -1,6 +1,6 @@
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
-// var browserSync = require('browser-sync').create();
+var browserSync = require('browser-sync').create();
 // var del = require('del');
 var runSequence = require('run-sequence');
 // var pngquant = require('imagemin-pngquant');
@@ -14,20 +14,63 @@ function lazyRequireTask(taskName, path, options) {
 		return task(callback);
 	});
 }
-lazyRequireTask('server', './tasks/server', {
-	server: { baseDir: './build/'},
-	watchPath: {
-				"pug": './src/pug/**/*.*',
-				"styles": './src/less/**/*.less',
-				"copy:js": './src/js/**/*.js',
-				"copy:libs:local": './src/libs/**/*.*',
-				"copy:img": [
-					'./src/img/**/*.*',
-					'!./src/img/svg-for-sprites/**/*.svg'
-				],
-				"svg": './src/img/svg/*.svg'
-			}
+gulp.task('server', function() {
+	browserSync.init({
+		server: { baseDir: './build/'}
+	});
+
+	$.watch('./src/pug/**/*.*', function(){
+		gulp.start('pug');
+	});
+
+	$.watch('./src/less/**/*.less', function(){
+		gulp.start('styles');
+	});
+
+	$.watch('./src/js/**/*.js', function(){
+		gulp.start('copy:js');
+	});
+
+	$.watch('./src/libs/**/*.*', function(){
+		gulp.start('copy:libs-local');
+	});
+
+	$.watch(['./src/img/**/*.*', '!./src/img/svg-for-sprites/**/*.svg'], function(){
+		gulp.start('copy:img');
+	});
+
+	$.watch('./src/img/svg/*.svg', function(){
+		gulp.start('svg');
+	});
 });
+// lazyRequireTask('server', './tasks/server', {
+// 	server: { baseDir: './build/'},
+// 	// path: {
+// 	// 			"pug": './src/pug/**/*.*',
+// 	// 			"styles": './src/less/**/*.less',
+// 	// 			"copy:js": './src/js/**/*.js',
+// 	// 			"copy:libs:local": './src/libs/**/*.*',
+// 	// 			"copy:img": [
+// 	// 				'./src/img/**/*.*',
+// 	// 				'!./src/img/svg-for-sprites/**/*.svg'
+// 	// 			],
+// 	// 			"svg": './src/img/svg/*.svg'
+// 	// 		}
+// });
+
+// lazyRequireTask('watch', './tasks/watch', {
+// 	// path: {
+// 	// 		"pug": './src/pug/**/*.*',
+// 	// 		"styles": './src/less/**/*.less',
+// 	// 		"copy:js": './src/js/**/*.js',
+// 	// 		"copy:libs:local": './src/libs/**/*.*',
+// 	// 		"copy:img": [
+// 	// 			'./src/img/**/*.*',
+// 	// 			'!./src/img/svg-for-sprites/**/*.svg'
+// 	// 		],
+// 	// 		"svg": './src/img/svg/*.svg'
+// 	// 	}
+// });
 lazyRequireTask('server:docs', './tasks/serverDocs', {
 	server: { baseDir: './docs/'}
 });
@@ -118,7 +161,7 @@ gulp.task('default', function(callback){
 	runSequence(
 		'clean:build',
 		['styles', 'pug', 'svg', 'copy:libs', 'copy:libs-local', 'copy:img', 'copy:js'],
-		'server',
+		'server', //'watch',
 		callback
 	)
 });
