@@ -22,6 +22,6 @@ module.exports = function(options) {
 			}))
 			.pipe($.sourcemaps.write())
 			.pipe(gulp.dest(options.dest))
-			.pipe(browserSync.stream());
+			.pipe(browserSync.stream({once: true}));//stream());
 		};
 };

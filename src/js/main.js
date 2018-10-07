@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	
+
 	$(".left-panel").customScrollbar({preventDefaultScroll: true});
 
 	/* For custom file inputs
